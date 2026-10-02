@@ -21,6 +21,15 @@ class MovieListing extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Mr. Bean's Holiday"),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Text('90 mins'),
+                SizedBox(width: 16),
+                Text('Rated U'),
+              ],
+            ),
+            SizedBox(height: 8),
             Text(
               "Mr. Bean wins a trip to the French Riviera and causes chaos all the way across France on his journey to the beach.",
             ),
