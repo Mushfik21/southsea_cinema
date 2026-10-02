@@ -30,24 +30,41 @@ class _MovieListingState extends State<MovieListing> {
       ),
       drawer: const NavDrawer(),
       body: Container(
+        margin: const EdgeInsets.all(16.0),
         padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: cinemaSurface,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Mr. Bean's Holiday"),
+            const Text(
+              "MR. BEAN'S HOLIDAY",
+              style: TextStyle(
+                color: cinemaBrand,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             const Row(
               children: [
-                Text('90 mins'),
+                Text('90 mins', style: TextStyle(color: cinemaFontMuted)),
                 SizedBox(width: 16),
-                Text('Rated U'),
+                Text('Rated U', style: TextStyle(color: cinemaFontMuted)),
               ],
             ),
             const SizedBox(height: 8),
             const Text(
               "Mr. Bean wins a trip to the French Riviera and causes chaos all the way across France on his journey to the beach.",
+              style: TextStyle(color: cinemaFontWhite),
             ),
             const SizedBox(height: 16),
+            const Text('BOOK TICKETS', style: cinemaHeaderStyle),
+            const Divider(color: cinemaFontMuted),
+            const SizedBox(height: 8),
             DropdownMenu<int>(
               initialSelection: _ticketQuantity,
               label: const Text('Tickets'),
@@ -69,10 +86,17 @@ class _MovieListingState extends State<MovieListing> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _addToOrder,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cinemaBrand,
+                foregroundColor: cinemaBackground,
+              ),
               child: const Text('Add to order'),
             ),
             const SizedBox(height: 8),
-            Text(_feedbackMessage),
+            Text(
+              _feedbackMessage,
+              style: const TextStyle(color: cinemaBrandLight),
+            ),
           ],
         ),
       ),
