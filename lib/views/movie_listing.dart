@@ -21,6 +21,34 @@ class _MovieListingState extends State<MovieListing> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget ticketDropdown = DropdownMenu<int>(
+      initialSelection: _ticketQuantity,
+      label: const Text('Tickets'),
+      onSelected: (int? value) {
+        if (value != null) {
+          setState(() {
+            _ticketQuantity = value;
+          });
+        }
+      },
+      dropdownMenuEntries: const [
+        DropdownMenuEntry(value: 1, label: '1'),
+        DropdownMenuEntry(value: 2, label: '2'),
+        DropdownMenuEntry(value: 3, label: '3'),
+        DropdownMenuEntry(value: 4, label: '4'),
+        DropdownMenuEntry(value: 5, label: '5'),
+      ],
+    );
+
+    final Widget addButton = ElevatedButton(
+      onPressed: _addToOrder,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: cinemaBrand,
+        foregroundColor: cinemaBackground,
+      ),
+      child: const Text('Add to order'),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(appTitle, style: cinemaHeaderStyle),
@@ -65,32 +93,27 @@ class _MovieListingState extends State<MovieListing> {
             const Text('BOOK TICKETS', style: cinemaHeaderStyle),
             const Divider(color: cinemaFontMuted),
             const SizedBox(height: 8),
-            DropdownMenu<int>(
-              initialSelection: _ticketQuantity,
-              label: const Text('Tickets'),
-              onSelected: (int? value) {
-                if (value != null) {
-                  setState(() {
-                    _ticketQuantity = value;
-                  });
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 600) {
+                  return Row(
+                    children: [
+                      ticketDropdown,
+                      const SizedBox(width: 16),
+                      addButton,
+                    ],
+                  );
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ticketDropdown,
+                      const SizedBox(height: 16),
+                      addButton,
+                    ],
+                  );
                 }
               },
-              dropdownMenuEntries: const [
-                DropdownMenuEntry(value: 1, label: '1'),
-                DropdownMenuEntry(value: 2, label: '2'),
-                DropdownMenuEntry(value: 3, label: '3'),
-                DropdownMenuEntry(value: 4, label: '4'),
-                DropdownMenuEntry(value: 5, label: '5'),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _addToOrder,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: cinemaBrand,
-                foregroundColor: cinemaBackground,
-              ),
-              child: const Text('Add to order'),
             ),
             const SizedBox(height: 8),
             Text(
