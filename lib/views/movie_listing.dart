@@ -15,7 +15,18 @@ class MovieListing extends StatelessWidget {
         elevation: 0,
       ),
       drawer: const NavDrawer(),
-      body: const SizedBox.shrink(),
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Mr. Bean's Holiday"),
+            Text(
+              "Mr. Bean wins a trip to the French Riviera and causes chaos all the way across France on his journey to the beach.",
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
