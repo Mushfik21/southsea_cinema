@@ -78,7 +78,7 @@ class _MovieListingState extends State<MovieListing> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+                      Row(
               children: [
                 Text(
                   '${widget.movie.runtime} mins',
@@ -87,6 +87,11 @@ class _MovieListingState extends State<MovieListing> {
                 const SizedBox(width: 16),
                 Text(
                   'Rated ${widget.movie.ageRating}',
+                  style: const TextStyle(color: cinemaFontMuted),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  widget.movie.formattedPrice,
                   style: const TextStyle(color: cinemaFontMuted),
                 ),
               ],
