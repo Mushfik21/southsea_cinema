@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
-import 'package:southsea_cinema/widgets/nav_drawer.dart';
+import 'package:southsea_cinema/models/movie.dart';
 
 class MovieListing extends StatefulWidget {
-  const MovieListing({super.key});
+  final Movie movie;
+
+  const MovieListing({super.key, required this.movie});
 
   @override
   State<MovieListing> createState() => _MovieListingState();
@@ -56,7 +58,6 @@ class _MovieListingState extends State<MovieListing> {
         iconTheme: const IconThemeData(color: cinemaBrand),
         elevation: 0,
       ),
-      drawer: const NavDrawer(),
       body: Container(
         margin: const EdgeInsets.all(16.0),
         padding: const EdgeInsets.all(16.0),
@@ -68,26 +69,32 @@ class _MovieListingState extends State<MovieListing> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "MR. BEAN'S HOLIDAY",
-              style: TextStyle(
+            Text(
+              widget.movie.title.toUpperCase(),
+              style: const TextStyle(
                 color: cinemaBrand,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               children: [
-                Text('90 mins', style: TextStyle(color: cinemaFontMuted)),
-                SizedBox(width: 16),
-                Text('Rated U', style: TextStyle(color: cinemaFontMuted)),
+                Text(
+                  '${widget.movie.runtime} mins',
+                  style: const TextStyle(color: cinemaFontMuted),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  'Rated ${widget.movie.ageRating}',
+                  style: const TextStyle(color: cinemaFontMuted),
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Mr. Bean wins a trip to the French Riviera and causes chaos all the way across France on his journey to the beach.",
-              style: TextStyle(color: cinemaFontWhite),
+            Text(
+              widget.movie.synopsis,
+              style: const TextStyle(color: cinemaFontWhite),
             ),
             const SizedBox(height: 16),
             const Text('BOOK TICKETS', style: cinemaHeaderStyle),
