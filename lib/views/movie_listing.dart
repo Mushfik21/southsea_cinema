@@ -78,7 +78,7 @@ class _MovieListingState extends State<MovieListing> {
               ),
             ),
             const SizedBox(height: 8),
-                      Row(
+            Row(
               children: [
                 Text(
                   '${widget.movie.runtime} mins',
