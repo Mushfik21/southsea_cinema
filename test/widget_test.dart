@@ -12,6 +12,7 @@ void main() {
   testWidgets('Home page shows title, movie cards and booking buttons',
       (WidgetTester tester) async {
     await tester.pumpWidget(const SouthseaCinemaApp());
+    await tester.pumpAndSettle();
 
     expect(find.text(appTitle), findsOneWidget);
     expect(find.byType(MovieCard), findsWidgets);
@@ -22,6 +23,7 @@ void main() {
   testWidgets('Booking opens the right film and Add to order shows feedback',
       (WidgetTester tester) async {
     await tester.pumpWidget(const SouthseaCinemaApp());
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Book tickets').first);
     await tester.pumpAndSettle();
@@ -35,5 +37,17 @@ void main() {
 
     expect(find.text('1 ticket(s) added to your order'), findsOneWidget);
     expect(BasketRepository.instance.totalTickets, 1);
+  });
+
+  testWidgets('Home page shows both films from the JSON file',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const SouthseaCinemaApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text("Mr. Bean's Holiday"), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('Truth or Dare'), 300);
+
+    expect(find.text('Truth or Dare'), findsOneWidget);
   });
 }
