@@ -1,9 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/main.dart';
+import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/movie_card.dart';
 
 void main() {
+  setUp(() {
+    BasketRepository.instance.clear();
+  });
+
   testWidgets('Home page shows title, movie cards and booking buttons',
       (WidgetTester tester) async {
     await tester.pumpWidget(const SouthseaCinemaApp());
@@ -29,5 +34,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('1 ticket(s) added to your order'), findsOneWidget);
+    expect(BasketRepository.instance.totalTickets, 1);
   });
 }

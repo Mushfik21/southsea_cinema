@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/movie.dart';
+import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/square_button.dart';
 
 class MovieListing extends StatefulWidget {
@@ -17,6 +18,7 @@ class _MovieListingState extends State<MovieListing> {
   String _feedbackMessage = '';
 
   void _addToOrder() {
+    BasketRepository.instance.addTickets(widget.movie, _ticketQuantity);
     setState(() {
       _feedbackMessage = '$_ticketQuantity ticket(s) added to your order';
     });
@@ -125,6 +127,13 @@ class _MovieListingState extends State<MovieListing> {
             Text(
               _feedbackMessage,
               style: const TextStyle(color: cinemaBrandLight),
+            ),
+            const SizedBox(height: 8),
+            SquareButton(
+              label: 'View basket',
+              onPressed: () {
+                Navigator.pushNamed(context, '/basket');
+              },
             ),
           ],
         ),
