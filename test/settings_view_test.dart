@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:southsea_cinema/views/settings_view.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+  });
+
   Future<void> pumpSettings(WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(home: SettingsView()));
+    await tester.pumpAndSettle();
   }
 
   group('SettingsView', () {
@@ -23,7 +31,7 @@ void main() {
       await pumpSettings(tester);
 
       await tester.tap(find.text('Save'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Please enter your name'), findsOneWidget);
     });
@@ -34,7 +42,7 @@ void main() {
       await tester.enterText(find.byKey(const Key('nameField')), 'Sam');
       await tester.enterText(find.byKey(const Key('emailField')), 'sam');
       await tester.tap(find.text('Save'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Please enter a valid email address'), findsOneWidget);
     });
@@ -50,7 +58,7 @@ void main() {
       await tester.tap(find.byType(Switch));
       await tester.pump();
       await tester.tap(find.text('Save'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Profile saved'), findsOneWidget);
       final Switch toggle = tester.widget<Switch>(find.byType(Switch));

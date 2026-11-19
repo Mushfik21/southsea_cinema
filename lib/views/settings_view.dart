@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/customer_profile.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 import 'package:southsea_cinema/widgets/square_button.dart';
+
+const String prefName = 'user_name';
+const String prefEmail = 'user_email';
+const String prefPhone = 'user_phone';
+const String prefEmailNews = 'user_email_news';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -15,8 +21,33 @@ class _SettingsViewState extends State<SettingsView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final SharedPreferencesAsync _prefs = SharedPreferencesAsync();
   bool _emailNews = false;
+  bool _isLoading = true;
   String _message = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final String? name = await _prefs.getString(prefName);
+    final String? email = await _prefs.getString(prefEmail);
+    final String? phone = await _prefs.getString(prefPhone);
+    final bool? emailNews = await _prefs.getBool(prefEmailNews);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _nameController.text = name ?? '';
+      _emailController.text = email ?? '';
+      _phoneController.text = phone ?? '';
+      _emailNews = emailNews ?? false;
+      _isLoading = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -26,21 +57,34 @@ class _SettingsViewState extends State<SettingsView> {
     super.dispose();
   }
 
-  void _saveSettings() {
+  Future<void> _saveSettings() async {
     final CustomerProfile profile = CustomerProfile(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
       emailNews: _emailNews,
     );
-    setState(() {
-      if (profile.name.isEmpty) {
+    if (profile.name.isEmpty) {
+      setState(() {
         _message = 'Please enter your name';
-      } else if (!profile.hasValidEmail) {
+      });
+      return;
+    }
+    if (!profile.hasValidEmail) {
+      setState(() {
         _message = 'Please enter a valid email address';
-      } else {
-        _message = 'Profile saved';
-      }
+      });
+      return;
+    }
+    await _prefs.setString(prefName, profile.name);
+    await _prefs.setString(prefEmail, profile.email);
+    await _prefs.setString(prefPhone, profile.phone);
+    await _prefs.setBool(prefEmailNews, profile.emailNews);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _message = 'Profile saved';
     });
   }
 
@@ -49,7 +93,14 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       appBar: AppBar(title: const Text('My Settings')),
       drawer: const NavDrawer(),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _buildForm(),
+    );
+  }
+
+  Widget _buildForm() {
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +158,6 @@ class _SettingsViewState extends State<SettingsView> {
             ),
           ],
         ),
-      ),
     );
   }
 }
