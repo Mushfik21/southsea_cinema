@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/models/movie.dart';
+import 'package:southsea_cinema/widgets/square_button.dart';
 
 class MovieListing extends StatefulWidget {
   final Movie movie;
@@ -42,13 +43,9 @@ class _MovieListingState extends State<MovieListing> {
       ],
     );
 
-    final Widget addButton = ElevatedButton(
+    final Widget addButton = SquareButton(
+      label: 'Add to order',
       onPressed: _addToOrder,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: cinemaBrand,
-        foregroundColor: cinemaBackground,
-      ),
-      child: const Text('Add to order'),
     );
 
     return Scaffold(
