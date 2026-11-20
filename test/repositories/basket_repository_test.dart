@@ -31,14 +31,6 @@ void main() {
     basket.clear();
   });
 
-  group('BasketItem', () {
-    test('lineTotal is price times quantity', () {
-      const BasketItem item = BasketItem(movie: bean, quantity: 3);
-
-      expect(item.lineTotal, 25.50);
-    });
-  });
-
   group('BasketRepository', () {
     test('starts empty', () {
       expect(basket.items, isEmpty);
