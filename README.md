@@ -88,6 +88,12 @@ flutter test --coverage
 The report is written to `coverage/lcov.info`. The `coverage/` folder is
 ignored by Git.
 
+Line coverage went from **92.9%** (421 of 453 lines) to **95.6%** (433 of
+453 lines) after adding tests for the film page, the drawer, the home page
+loading state, the movie cache and opening the real database file. The
+lines still not covered are `main()` and the error messages shown when
+loading or saving fails.
+
 Before committing, the code is checked with:
 
 ```bash

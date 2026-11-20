@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart';
 import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/models/booking.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -114,6 +115,26 @@ void main() {
       await openEmptyDatabase();
 
       expect(await cinemaDb.getAllBookings(), isEmpty);
+    });
+  });
+
+  group('CinemaDatabase on a real file', () {
+    test('opens the database file and seeds three bookings', () async {
+      // Use the desktop SQLite engine instead of the Android one.
+      databaseFactory = databaseFactoryFfiNoIsolate;
+      final String path =
+          join(await databaseFactory.getDatabasesPath(), 'cinema_data.db');
+      await databaseFactory.deleteDatabase(path);
+      cinemaDb.setDatabase(null);
+
+      final List<Booking> bookings = await cinemaDb.getAllBookings();
+
+      expect(bookings.length, 3);
+      expect(bookings.first.bookingNumber, 1003);
+      expect(await cinemaDb.getNextBookingNumber(), 1004);
+
+      await cinemaDb.close();
+      await databaseFactory.deleteDatabase(path);
     });
   });
 }
