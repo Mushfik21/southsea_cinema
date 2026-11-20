@@ -114,7 +114,7 @@ class _BasketViewState extends State<BasketView> {
         children: [
           ..._buildBasketSection(),
           const SizedBox(height: 32),
-          const Text('PAST BOOKINGS', style: cinemaHeaderStyle),
+          const Text('PAST BOOKINGS', style: cinemaSectionStyle),
           const Divider(color: cinemaFontMuted),
           ..._buildPastBookings(),
         ],
@@ -150,11 +150,9 @@ class _BasketViewState extends State<BasketView> {
 
   Widget _buildLineItem(BasketItem item) {
     return Card(
-      color: cinemaSurface,
       child: ListTile(
         title: Text(
           item.movie.title,
-          style: const TextStyle(color: cinemaFontWhite),
         ),
         subtitle: Text(
           '${item.quantity} x ${item.movie.formattedPrice}',
@@ -163,10 +161,7 @@ class _BasketViewState extends State<BasketView> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              '£${item.lineTotal.toStringAsFixed(2)}',
-              style: const TextStyle(color: cinemaFontWhite),
-            ),
+            Text('£${item.lineTotal.toStringAsFixed(2)}'),
             IconButton(
               key: Key('remove_${item.movie.id}'),
               tooltip: 'Remove one ticket',
@@ -185,9 +180,9 @@ class _BasketViewState extends State<BasketView> {
       children: [
         Text(
           'Total (${_basket.totalTickets} tickets)',
-          style: cinemaHeaderStyle,
+          style: cinemaSectionStyle,
         ),
-        Text(_basket.formattedTotal, style: cinemaHeaderStyle),
+        Text(_basket.formattedTotal, style: cinemaSectionStyle),
       ],
     );
   }
@@ -216,11 +211,9 @@ class _BasketViewState extends State<BasketView> {
 
   Widget _buildBookingCard(Booking booking) {
     return Card(
-      color: cinemaSurface,
       child: ListTile(
         title: Text(
           'Booking #${booking.bookingNumber}',
-          style: const TextStyle(color: cinemaFontWhite),
         ),
         subtitle: Text(
           '${booking.summary}\n${booking.date}',

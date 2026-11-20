@@ -12,7 +12,6 @@ class MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: cinemaSurface,
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -35,10 +34,7 @@ class MovieCard extends StatelessWidget {
               style: const TextStyle(color: cinemaFontMuted),
             ),
             const SizedBox(height: 8),
-            Text(
-              movie.synopsis,
-              style: const TextStyle(color: cinemaFontWhite),
-            ),
+            Text(movie.synopsis),
             const SizedBox(height: 12),
             SquareButton(
               label: 'Book tickets',
