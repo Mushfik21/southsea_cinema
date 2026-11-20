@@ -1,14 +1,32 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:southsea_cinema/constants.dart';
+import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/main.dart';
 import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/movie_card.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
-  setUp(() {
+  setUpAll(() {
+    sqfliteFfiInit();
+  });
+
+  setUp(() async {
     BasketRepository.instance.clear();
     rootBundle.clear();
+    final Database db = await databaseFactoryFfiNoIsolate.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: CinemaDatabase.instance.createTables,
+      ),
+    );
+    CinemaDatabase.instance.setDatabase(db);
+  });
+
+  tearDown(() async {
+    await CinemaDatabase.instance.close();
   });
 
   testWidgets('Home page shows title, movie cards and booking buttons',
@@ -78,9 +96,10 @@ void main() {
     expect(find.text('1 x £8.50'), findsOneWidget);
 
     await tester.tap(find.text('Checkout'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Your basket is empty'), findsOneWidget);
     expect(BasketRepository.instance.items, isEmpty);
+    expect(find.text('Booking #1001'), findsOneWidget);
   });
 }
