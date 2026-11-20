@@ -17,7 +17,8 @@ Portsmouth, following the weekly worksheets.
 - View the basket, remove tickets one at a time and see the running total
 - Check out to save a numbered booking (starting at 1001) in a local SQLite
   database
-- See past bookings listed under the basket, newest first
+- See past bookings listed under the basket, newest first, with each film
+  and quantity (saved in a separate `booking_items` table)
 - Save a customer profile (name, email, phone and a news opt-in) with
   shared preferences
 - Switch between light and dark mode in My Settings (the choice is saved)
@@ -105,11 +106,13 @@ dart analyze
 
 - `lib/main.dart`: the app, themes (light and dark) and named routes
 - `lib/constants.dart`: shared colours, text styles and the app title
-- `lib/models/`: `Movie`, `BasketItem`, `Booking` and `CustomerProfile`
+- `lib/models/`: `Movie`, `BasketItem`, `Booking`, `BookingItem` and
+  `CustomerProfile`
 - `lib/repositories/`: `MovieRepository` (loads the JSON) and
   `BasketRepository` (the in-memory basket)
 - `lib/database/`: `CinemaDatabase`, which saves and reads bookings with
-  SQLite
+  SQLite (version 2 adds the `booking_items` table and keeps old bookings
+  when it upgrades)
 - `lib/views/`: the home, film listing, basket and settings pages
 - `lib/widgets/`: reusable widgets (`MovieCard`, `NavDrawer`,
   `SquareButton`)
