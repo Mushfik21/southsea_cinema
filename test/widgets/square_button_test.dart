@@ -47,7 +47,8 @@ void main() {
       final OutlinedBorder? shape = button.style?.shape?.resolve({});
 
       expect(shape, isA<RoundedRectangleBorder>());
-      expect((shape! as RoundedRectangleBorder).borderRadius, BorderRadius.zero);
+      expect(
+          (shape! as RoundedRectangleBorder).borderRadius, BorderRadius.zero);
     });
   });
 }

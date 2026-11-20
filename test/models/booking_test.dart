@@ -30,8 +30,7 @@ void main() {
       expect(booking.id, isNull);
     });
 
-    test('toMap uses the database column names and leaves out a null id',
-        () {
+    test('toMap uses the database column names and leaves out a null id', () {
       const Booking booking = Booking(
         bookingNumber: 1001,
         summary: '1 x Truth or Dare',
