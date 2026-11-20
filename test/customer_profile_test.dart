@@ -35,8 +35,7 @@ void main() {
 
     test('is not valid without a name or with a bad email', () {
       const CustomerProfile noName = CustomerProfile(email: 'sam@example.com');
-      const CustomerProfile badEmail =
-          CustomerProfile(name: 'Sam', email: 'sam');
+      const CustomerProfile badEmail = CustomerProfile(name: 'Sam', email: 'sam');
 
       expect(noName.isValid, false);
       expect(badEmail.isValid, false);

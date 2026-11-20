@@ -7,6 +7,7 @@ class NavDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: cinemaBackground,
       child: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -53,7 +54,7 @@ class DrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(title),
+      title: Text(title, style: const TextStyle(color: cinemaFontWhite)),
       onTap: () {
         Navigator.pop(context);
         if (route != null) {

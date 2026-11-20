@@ -58,7 +58,7 @@ class _MovieListingState extends State<MovieListing> {
         margin: const EdgeInsets.all(16.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: cinemaSurface,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -93,9 +93,12 @@ class _MovieListingState extends State<MovieListing> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(widget.movie.synopsis),
+            Text(
+              widget.movie.synopsis,
+              style: const TextStyle(color: cinemaFontWhite),
+            ),
             const SizedBox(height: 16),
-            const Text('BOOK TICKETS', style: cinemaSectionStyle),
+            const Text('BOOK TICKETS', style: cinemaHeaderStyle),
             const Divider(color: cinemaFontMuted),
             const SizedBox(height: 8),
             LayoutBuilder(

@@ -11,18 +11,8 @@ const Color cinemaFontWhite = Color(0xFFFFFFFF);
 const Color cinemaFontMuted = Color(0xFF8A90A0);
 const Color cinemaSurface = Color(0xFF242936);
 
-const Color cinemaLightBackground = Color(0xFFF4F6FA);
-const Color cinemaLightSurface = Color(0xFFFFFFFF);
-
 const TextStyle cinemaHeaderStyle = TextStyle(
   color: cinemaFontWhite,
-  fontSize: 18,
-  fontWeight: FontWeight.bold,
-);
-
-// Section headings inside pages. No colour, so the text follows the theme
-// (white in dark mode, dark grey in light mode).
-const TextStyle cinemaSectionStyle = TextStyle(
   fontSize: 18,
   fontWeight: FontWeight.bold,
 );

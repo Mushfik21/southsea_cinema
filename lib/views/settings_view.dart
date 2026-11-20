@@ -9,17 +9,9 @@ const String prefName = 'user_name';
 const String prefEmail = 'user_email';
 const String prefPhone = 'user_phone';
 const String prefEmailNews = 'user_email_news';
-const String prefDarkMode = 'dark_mode';
 
 class SettingsView extends StatefulWidget {
-  final bool darkMode;
-  final ValueChanged<bool>? onDarkModeChanged;
-
-  const SettingsView({
-    super.key,
-    this.darkMode = true,
-    this.onDarkModeChanged,
-  });
+  const SettingsView({super.key});
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -31,33 +23,13 @@ class _SettingsViewState extends State<SettingsView> {
   final TextEditingController _phoneController = TextEditingController();
   final SharedPreferencesAsync _prefs = SharedPreferencesAsync();
   bool _emailNews = false;
-  bool _darkMode = true;
   bool _isLoading = true;
   String _message = '';
 
   @override
   void initState() {
     super.initState();
-    _darkMode = widget.darkMode;
     _loadSettings();
-  }
-
-  @override
-  void didUpdateWidget(SettingsView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.darkMode != widget.darkMode) {
-      _darkMode = widget.darkMode;
-    }
-  }
-
-  void _changeDarkMode(bool value) {
-    setState(() {
-      _darkMode = value;
-    });
-    final ValueChanged<bool>? onChanged = widget.onDarkModeChanged;
-    if (onChanged != null) {
-      onChanged(value);
-    }
   }
 
   Future<void> _loadSettings() async {
@@ -129,70 +101,63 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _buildForm() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('APPEARANCE', style: cinemaSectionStyle),
-          SwitchListTile(
-            key: const Key('darkModeSwitch'),
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Dark mode'),
-            value: _darkMode,
-            onChanged: _changeDarkMode,
-          ),
-          const SizedBox(height: 16),
-          const Text('MY PROFILE', style: cinemaSectionStyle),
-          const SizedBox(height: 16),
-          TextField(
-            key: const Key('nameField'),
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              border: OutlineInputBorder(),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('MY PROFILE', style: cinemaHeaderStyle),
+            const SizedBox(height: 16),
+            TextField(
+              key: const Key('nameField'),
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            key: const Key('emailField'),
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
+            const SizedBox(height: 12),
+            TextField(
+              key: const Key('emailField'),
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            key: const Key('phoneField'),
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Phone (optional)',
-              border: OutlineInputBorder(),
+            const SizedBox(height: 12),
+            TextField(
+              key: const Key('phoneField'),
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Phone (optional)',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          SwitchListTile(
-            key: const Key('emailNewsSwitch'),
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Email me news about new films'),
-            value: _emailNews,
-            onChanged: (bool value) {
-              setState(() {
-                _emailNews = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          SquareButton(label: 'Save', onPressed: _saveSettings),
-          const SizedBox(height: 12),
-          Text(
-            _message,
-            style: const TextStyle(color: cinemaBrandLight),
-          ),
-        ],
-      ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text(
+                'Email me news about new films',
+                style: TextStyle(color: cinemaFontWhite),
+              ),
+              value: _emailNews,
+              onChanged: (bool value) {
+                setState(() {
+                  _emailNews = value;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            SquareButton(label: 'Save', onPressed: _saveSettings),
+            const SizedBox(height: 12),
+            Text(
+              _message,
+              style: const TextStyle(color: cinemaBrandLight),
+            ),
+          ],
+        ),
     );
   }
 }

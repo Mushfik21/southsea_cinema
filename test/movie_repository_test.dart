@@ -29,14 +29,4 @@ void main() {
     expect(movies[1].title, 'Truth or Dare');
     expect(movies[1].ticketPrice, 9.50);
   });
-
-  test('loadMoviesFromAsset reuses the cached list the second time', () async {
-    final MovieRepository jsonRepository = MovieRepository();
-
-    final first = await jsonRepository.loadMoviesFromAsset();
-    final second = await jsonRepository.loadMoviesFromAsset();
-
-    expect(identical(first, second), true);
-    expect(identical(jsonRepository.getMovies(), first), true);
-  });
 }

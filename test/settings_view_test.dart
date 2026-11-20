@@ -56,14 +56,13 @@ void main() {
         find.byKey(const Key('emailField')),
         'sam@example.com',
       );
-      await tester.tap(find.byKey(const Key('emailNewsSwitch')));
+      await tester.tap(find.byType(Switch));
       await tester.pump();
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
       expect(find.text('Profile saved'), findsOneWidget);
-      final SwitchListTile toggle =
-          tester.widget(find.byKey(const Key('emailNewsSwitch')));
+      final Switch toggle = tester.widget<Switch>(find.byType(Switch));
       expect(toggle.value, true);
     });
   });
@@ -84,8 +83,7 @@ void main() {
       expect(find.text('Alex Test'), findsOneWidget);
       expect(find.text('alex@example.com'), findsOneWidget);
       expect(find.text('07000000000'), findsOneWidget);
-      final SwitchListTile toggle =
-          tester.widget(find.byKey(const Key('emailNewsSwitch')));
+      final Switch toggle = tester.widget<Switch>(find.byType(Switch));
       expect(toggle.value, true);
     });
 
@@ -98,7 +96,7 @@ void main() {
         find.byKey(const Key('emailField')),
         'sam@example.com',
       );
-      await tester.tap(find.byKey(const Key('emailNewsSwitch')));
+      await tester.tap(find.byType(Switch));
       await tester.pump();
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
@@ -126,42 +124,6 @@ void main() {
 
       expect(find.text('Sam'), findsOneWidget);
       expect(find.text('sam@example.com'), findsOneWidget);
-    });
-  });
-
-  group('Dark mode switch', () {
-    testWidgets('shows the switch turned on in dark mode',
-        (WidgetTester tester) async {
-      await pumpSettings(tester);
-
-      expect(find.text('Dark mode'), findsOneWidget);
-      final SwitchListTile tile =
-          tester.widget(find.byKey(const Key('darkModeSwitch')));
-      expect(tile.value, true);
-    });
-
-    testWidgets('tapping the switch sends the new value to the app',
-        (WidgetTester tester) async {
-      bool? changedTo;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: SettingsView(
-            darkMode: true,
-            onDarkModeChanged: (bool value) {
-              changedTo = value;
-            },
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('darkModeSwitch')));
-      await tester.pump();
-
-      expect(changedTo, false);
-      final SwitchListTile tile =
-          tester.widget(find.byKey(const Key('darkModeSwitch')));
-      expect(tile.value, false);
     });
   });
 }
