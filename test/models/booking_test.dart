@@ -114,5 +114,16 @@ void main() {
 
       expect(booking.formattedTotal, '£17.00');
     });
-  });
+  
+    test('a booking has no items unless they are given', () {
+      const Booking booking = Booking(
+        bookingNumber: 1001,
+        summary: '1 x Truth or Dare',
+        total: 9.50,
+        date: '02/10/2026 23:30',
+      );
+
+      expect(booking.items, isEmpty);
+    });
+});
 }

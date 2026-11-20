@@ -167,6 +167,12 @@ void main() {
       expect(saved.length, 1);
       expect(saved.first.summary, "2 x Mr. Bean's Holiday");
       expect(saved.first.total, 17.0);
+      expect(saved.first.items.length, 1);
+      expect(saved.first.items.first.quantity, 2);
+      expect(
+        find.textContaining("2 x Mr. Bean's Holiday @ £8.50"),
+        findsOneWidget,
+      );
     });
   });
 }

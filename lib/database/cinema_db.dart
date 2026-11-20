@@ -1,5 +1,6 @@
 import 'package:path/path.dart';
 import 'package:southsea_cinema/models/booking.dart';
+import 'package:southsea_cinema/models/booking_item.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CinemaDatabase {
@@ -45,7 +46,31 @@ class CinemaDatabase {
   Future<Database> _initDB(String fileName) async {
     final String dbPath = await getDatabasesPath();
     final String path = join(dbPath, fileName);
-    return openDatabase(path, version: 1, onCreate: createTablesAndSeed);
+    return openDatabase(
+      path,
+      version: 2,
+      onConfigure: configureDatabase,
+      onCreate: createTablesAndSeed,
+      onUpgrade: upgradeDatabase,
+    );
+  }
+
+  // Runs every time the database opens. SQLite ignores foreign keys
+  // unless we switch them on.
+  Future<void> configureDatabase(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  // Version 1 only had the bookings table. Version 2 adds booking_items.
+  // Old bookings are kept and still show their summary.
+  Future<void> upgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    if (oldVersion < 2) {
+      await createBookingItemsTable(db);
+    }
   }
 
   Future<void> createTables(Database db, int version) async {
@@ -56,6 +81,20 @@ class CinemaDatabase {
         summary TEXT NOT NULL,
         total REAL NOT NULL,
         date TEXT NOT NULL
+      )
+    ''');
+    await createBookingItemsTable(db);
+  }
+
+  Future<void> createBookingItemsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS booking_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        booking_id INTEGER NOT NULL,
+        movie_title TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        ticket_price REAL NOT NULL,
+        FOREIGN KEY (booking_id) REFERENCES bookings (id) ON DELETE CASCADE
       )
     ''');
   }
@@ -72,13 +111,47 @@ class CinemaDatabase {
     return db.insert('bookings', booking.toMap());
   }
 
+  // Saves the booking and all its items together. If any insert fails,
+  // the transaction rolls back and nothing is saved.
+  Future<int> insertBookingWithItems(
+    Booking booking,
+    List<BookingItem> items,
+  ) async {
+    final Database db = await database;
+    return db.transaction((Transaction txn) async {
+      final int bookingId = await txn.insert('bookings', booking.toMap());
+      for (final BookingItem item in items) {
+        final Map<String, Object?> row = item.toMap();
+        row['booking_id'] = bookingId;
+        await txn.insert('booking_items', row);
+      }
+      return bookingId;
+    });
+  }
+
+  Future<List<BookingItem>> getItemsForBooking(int bookingId) async {
+    final Database db = await database;
+    final List<Map<String, Object?>> rows = await db.query(
+      'booking_items',
+      where: 'booking_id = ?',
+      whereArgs: [bookingId],
+      orderBy: 'id',
+    );
+    return rows.map(BookingItem.fromMap).toList();
+  }
+
   Future<List<Booking>> getAllBookings() async {
     final Database db = await database;
     final List<Map<String, Object?>> rows = await db.query(
       'bookings',
       orderBy: 'booking_number DESC',
     );
-    return rows.map(Booking.fromMap).toList();
+    final List<Booking> bookings = [];
+    for (final Map<String, Object?> row in rows) {
+      final List<BookingItem> items = await getItemsForBooking(row['id'] as int);
+      bookings.add(Booking.fromMap(row, items: items));
+    }
+    return bookings;
   }
 
   Future<int> getNextBookingNumber() async {

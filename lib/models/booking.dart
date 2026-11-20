@@ -1,9 +1,12 @@
+import 'package:southsea_cinema/models/booking_item.dart';
+
 class Booking {
   final int? id;
   final int bookingNumber;
   final String summary;
   final double total;
   final String date;
+  final List<BookingItem> items;
 
   const Booking({
     this.id,
@@ -11,6 +14,7 @@ class Booking {
     required this.summary,
     required this.total,
     required this.date,
+    this.items = const [],
   });
 
   Map<String, Object?> toMap() {
@@ -26,13 +30,17 @@ class Booking {
     return map;
   }
 
-  factory Booking.fromMap(Map<String, Object?> map) {
+  factory Booking.fromMap(
+    Map<String, Object?> map, {
+    List<BookingItem> items = const [],
+  }) {
     return Booking(
       id: map['id'] as int?,
       bookingNumber: map['booking_number'] as int,
       summary: map['summary'] as String,
       total: (map['total'] as num).toDouble(),
       date: map['date'] as String,
+      items: items,
     );
   }
 

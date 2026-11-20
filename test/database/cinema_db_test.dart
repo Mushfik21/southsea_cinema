@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/models/booking.dart';
+import 'package:southsea_cinema/models/booking_item.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -135,6 +136,138 @@ void main() {
 
       await cinemaDb.close();
       await databaseFactory.deleteDatabase(path);
+    });
+  });
+
+  group('CinemaDatabase booking items (version 2)', () {
+    const Booking booking = Booking(
+      bookingNumber: 1004,
+      summary: "2 x Mr. Bean's Holiday, 1 x Truth or Dare",
+      total: 26.50,
+      date: '20/11/2026 18:00',
+    );
+    const List<BookingItem> items = [
+      BookingItem(
+        movieTitle: "Mr. Bean's Holiday",
+        quantity: 2,
+        ticketPrice: 8.50,
+      ),
+      BookingItem(movieTitle: 'Truth or Dare', quantity: 1, ticketPrice: 9.50),
+    ];
+
+    test('saves a booking and its items together', () async {
+      await openEmptyDatabase();
+
+      final int bookingId = await cinemaDb.insertBookingWithItems(
+        booking,
+        items,
+      );
+
+      final List<BookingItem> saved =
+          await cinemaDb.getItemsForBooking(bookingId);
+      expect(saved.length, 2);
+      expect(saved[0].movieTitle, "Mr. Bean's Holiday");
+      expect(saved[0].quantity, 2);
+      expect(saved[1].movieTitle, 'Truth or Dare');
+
+      final List<Booking> bookings = await cinemaDb.getAllBookings();
+      expect(bookings.first.bookingNumber, 1004);
+      expect(bookings.first.items.length, 2);
+    });
+
+    test('old bookings without items still load', () async {
+      await openSeededDatabase();
+
+      final List<Booking> bookings = await cinemaDb.getAllBookings();
+
+      expect(bookings.length, 3);
+      expect(bookings.first.items, isEmpty);
+      expect(bookings.first.summary, "2 x Mr. Bean's Holiday");
+    });
+
+    test('foreign keys stop items for a booking that does not exist',
+        () async {
+      final Database db = await databaseFactoryFfiNoIsolate.openDatabase(
+        inMemoryDatabasePath,
+        options: OpenDatabaseOptions(
+          version: 2,
+          onConfigure: cinemaDb.configureDatabase,
+          onCreate: cinemaDb.createTables,
+        ),
+      );
+      cinemaDb.setDatabase(db);
+
+      await expectLater(
+        db.insert('booking_items', {
+          'booking_id': 999,
+          'movie_title': 'Truth or Dare',
+          'quantity': 1,
+          'ticket_price': 9.50,
+        }),
+        throwsA(isA<DatabaseException>()),
+      );
+    });
+
+    test('upgrading from version 1 keeps the old bookings', () async {
+      final String path = join(
+        await databaseFactoryFfiNoIsolate.getDatabasesPath(),
+        'upgrade_test.db',
+      );
+      await databaseFactoryFfiNoIsolate.deleteDatabase(path);
+
+      // Make a version 1 database: only the bookings table.
+      final Database oldDb = await databaseFactoryFfiNoIsolate.openDatabase(
+        path,
+        options: OpenDatabaseOptions(
+          version: 1,
+          onCreate: (Database db, int version) async {
+            await db.execute('''
+              CREATE TABLE bookings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                booking_number INTEGER NOT NULL,
+                summary TEXT NOT NULL,
+                total REAL NOT NULL,
+                date TEXT NOT NULL
+              )
+            ''');
+          },
+        ),
+      );
+      await oldDb.insert(
+        'bookings',
+        const Booking(
+          bookingNumber: 1001,
+          summary: '1 x Truth or Dare',
+          total: 9.50,
+          date: '02/10/2026 23:30',
+        ).toMap(),
+      );
+      await oldDb.close();
+
+      // Open it again as version 2, which runs onUpgrade.
+      final Database newDb = await databaseFactoryFfiNoIsolate.openDatabase(
+        path,
+        options: OpenDatabaseOptions(
+          version: 2,
+          onConfigure: cinemaDb.configureDatabase,
+          onCreate: cinemaDb.createTablesAndSeed,
+          onUpgrade: cinemaDb.upgradeDatabase,
+        ),
+      );
+      cinemaDb.setDatabase(newDb);
+
+      final List<Booking> bookings = await cinemaDb.getAllBookings();
+      expect(bookings.length, 1);
+      expect(bookings.first.summary, '1 x Truth or Dare');
+      expect(bookings.first.items, isEmpty);
+
+      await cinemaDb.insertBookingWithItems(booking, items);
+      final List<Booking> after = await cinemaDb.getAllBookings();
+      expect(after.first.bookingNumber, 1004);
+      expect(after.first.items.length, 2);
+
+      await cinemaDb.close();
+      await databaseFactoryFfiNoIsolate.deleteDatabase(path);
     });
   });
 }

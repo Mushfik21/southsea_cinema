@@ -3,6 +3,7 @@ import 'package:southsea_cinema/constants.dart';
 import 'package:southsea_cinema/database/cinema_db.dart';
 import 'package:southsea_cinema/models/basket_item.dart';
 import 'package:southsea_cinema/models/booking.dart';
+import 'package:southsea_cinema/models/booking_item.dart';
 import 'package:southsea_cinema/repositories/basket_repository.dart';
 import 'package:southsea_cinema/widgets/nav_drawer.dart';
 import 'package:southsea_cinema/widgets/square_button.dart';
@@ -73,13 +74,21 @@ class _BasketViewState extends State<BasketView> {
     try {
       final CinemaDatabase db = CinemaDatabase.instance;
       final int bookingNumber = await db.getNextBookingNumber();
-      await db.insertBooking(
+      await db.insertBookingWithItems(
         Booking(
           bookingNumber: bookingNumber,
           summary: _buildSummary(items),
           total: _basket.total,
           date: _formatDate(DateTime.now()),
         ),
+        [
+          for (final BasketItem item in items)
+            BookingItem(
+              movieTitle: item.movie.title,
+              quantity: item.quantity,
+              ticketPrice: item.movie.ticketPrice,
+            ),
+        ],
       );
       _basket.clear();
       await _loadBookings();
@@ -209,6 +218,18 @@ class _BasketViewState extends State<BasketView> {
     ];
   }
 
+  // New bookings list each film. Old bookings (saved before the
+  // booking_items table existed) have no items, so show their summary.
+  String _describeBooking(Booking booking) {
+    if (booking.items.isEmpty) {
+      return booking.summary;
+    }
+    return booking.items
+        .map((item) =>
+            '${item.quantity} x ${item.movieTitle} @ ${item.formattedPrice}')
+        .join('\n');
+  }
+
   Widget _buildBookingCard(Booking booking) {
     return Card(
       child: ListTile(
@@ -216,7 +237,7 @@ class _BasketViewState extends State<BasketView> {
           'Booking #${booking.bookingNumber}',
         ),
         subtitle: Text(
-          '${booking.summary}\n${booking.date}',
+          '${_describeBooking(booking)}\n${booking.date}',
           style: const TextStyle(color: cinemaFontMuted),
         ),
         trailing: Text(
