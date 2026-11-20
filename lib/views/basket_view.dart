@@ -168,6 +168,7 @@ class _BasketViewState extends State<BasketView> {
               style: const TextStyle(color: cinemaFontWhite),
             ),
             IconButton(
+              key: Key('remove_${item.movie.id}'),
               tooltip: 'Remove one ticket',
               icon: const Icon(Icons.remove_circle_outline, color: cinemaBrand),
               onPressed: () => _removeTicket(item.movie.id),

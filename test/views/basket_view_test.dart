@@ -19,6 +19,28 @@ void main() {
     posterPath: 'p',
   );
 
+  const Movie dare = Movie(
+    id: '2',
+    title: 'Truth or Dare',
+    synopsis: 'S',
+    ageRating: '15',
+    runtime: 100,
+    screeningTime: '23:30',
+    ticketPrice: 9.50,
+    posterPath: 'p',
+  );
+
+  const Movie musical = Movie(
+    id: '3',
+    title: 'The Sound of Music',
+    synopsis: 'S',
+    ageRating: 'U',
+    runtime: 174,
+    screeningTime: '14:00',
+    ticketPrice: 7.00,
+    posterPath: 'p',
+  );
+
   final BasketRepository basket = BasketRepository.instance;
 
   setUpAll(() {
@@ -74,6 +96,27 @@ void main() {
 
       expect(find.text('1 x £8.50'), findsOneWidget);
       expect(basket.totalTickets, 1);
+    });
+
+    testWidgets('deleting the middle film keeps the other two',
+        (WidgetTester tester) async {
+      basket.addTickets(bean, 1);
+      basket.addTickets(dare, 1);
+      basket.addTickets(musical, 1);
+      await pumpBasket(tester);
+
+      expect(find.text("Mr. Bean's Holiday"), findsOneWidget);
+      expect(find.text('Truth or Dare'), findsOneWidget);
+      expect(find.text('The Sound of Music'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('remove_2')));
+      await tester.pump();
+
+      expect(find.text("Mr. Bean's Holiday"), findsOneWidget);
+      expect(find.text('Truth or Dare'), findsNothing);
+      expect(find.text('The Sound of Music'), findsOneWidget);
+      expect(basket.items.length, 2);
+      expect(find.text('Total (2 tickets)'), findsOneWidget);
     });
   });
 
